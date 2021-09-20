@@ -1,9 +1,7 @@
-#ifndef HXCPP_H
-  #include <hxcpp.h>
-#endif
+#include <hxcpp.h>
 
 #include "./linc_lua.h"
-#include "../lib/Lua/src/lua.hpp"
+#include "../lib/lua/src/lua.hpp"
 
 
 namespace linc {
@@ -30,6 +28,18 @@ namespace linc {
 
             return ::String(lua_tolstring(l, v, len));
 
+        }
+        
+        ::cpp::Function<int(lua_State*)> tocfunction(lua_State* l, int i) {
+            return (::cpp::Function<int(lua_State*)>) lua_tocfunction(l, i);
+        }
+
+        void pushcclosure(lua_State* l, ::cpp::Function<int(lua_State*)> fn, int n) {
+            lua_pushcclosure(l, (lua_CFunction)fn, n);
+        }
+
+        void pushcfunction(lua_State* l, ::cpp::Function<int(lua_State*)> fn) {
+            lua_pushcfunction(l, (lua_CFunction)fn);
         }
 
         ::String _typename(lua_State *l, int v){
@@ -152,6 +162,10 @@ namespace linc {
 
             return ::String(luaL_optstring(L, n, d));
 
+        }
+
+        void error(lua_State *L, const char* fmt) {
+            luaL_error(L,fmt,"");
         }
 
         ::String ltypename(lua_State *L, int idx){

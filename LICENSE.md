@@ -3,8 +3,10 @@ Be sure to consult those accordingly.
 
 The MIT License (MIT)
 
-Copyright (c) 2015 Sven Bergström   
-Copyright (c) 2015 snõwkit contributors
+Copyright (c) 2021 Eric Myllyoja
+Copyright (c) 2018 Andrei Rudenko  
+Copyright (c) 2018 Sven Bergström   
+Copyright (c) 2018 snõwkit contributors
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal

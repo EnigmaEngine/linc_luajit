@@ -36,7 +36,7 @@ extern class Lua {
 	public static inline var LUA_ERRMEM:Int      = 4;
 	public static inline var LUA_ERRERR:Int      = 5;
 
-	
+
 	/* basic types */
 
 	public static inline var LUA_TNONE:Int           = (-1);
@@ -61,7 +61,7 @@ extern class Lua {
 
 	// @:native('lua_newstate')
 	// static function newstate(f:lua_Alloc, ud:Void) : State;
-	
+
 	@:native('lua_close')
 	static function close(l:State) : Void;
 
@@ -110,6 +110,14 @@ extern class Lua {
 	}
 
 	@:noCompletion
+	@:native('lua_isfunction')
+	static function _isfunction(l:State, idx:Int) : Int;
+
+	static inline function isfunction(l:State, idx:Int) : Bool {
+		return _isfunction(l, idx) != 0;
+	}
+
+	@:noCompletion
 	@:native('lua_isstring')
 	static function _isstring(l:State, idx:Int) : Int;
 
@@ -131,6 +139,14 @@ extern class Lua {
 
 	static inline function isuserdata(l:State, idx:Int) : Bool {
 		return _isuserdata(l, idx) != 0;
+	}
+
+	@:noCompletion
+	@:native('lua_isboolean')
+	static function _isboolean(l:State, idx:Int) : Int;
+
+	static inline function isboolean(l:State, idx:Int) : Bool {
+		return _isboolean(l, idx) != 0;
 	}
 
 	@:native('lua_type')
@@ -168,8 +184,8 @@ extern class Lua {
 	@:native('lua_objlen')
 	static function objlen(l:State, idx:Int) : Int;
 
-	// @:native('lua_tocfunction')
-	// static function tocfunction(l:State, idx:Int) : lua_CFunction;
+	@:native('linc::lua::tocfunction')
+	static function tocfunction(l:State, idx:Int):cpp.Callable<StatePointer->Int>;
 
 	@:native('lua_touserdata')
 	static function touserdata(l:State, idx:Int) : Void;
@@ -204,8 +220,8 @@ extern class Lua {
 	// @:native('lua_pushfstring')
 	// static function pushfstring(l:State, fmt:String, ...) : Void;
 
-	// @:native('lua_pushcclosure')
-	// static function pushcclosure(l:State, fn:lua_CFunction n:Int) : Void;
+	@:native('linc::lua::pushcclosure')
+	static function pushcclosure(l:State, fn:cpp.Callable<StatePointer>, n:Int) : Void;
 
 
 	@:noCompletion
@@ -350,14 +366,11 @@ extern class Lua {
 
 	}
 
-	// @:native('lua_pushcfunction') //?
-	// static function pushcfunction(l:State, f:lua_CFunction) : Void;
+ 	@:native('linc::lua::pushcfunction') //?
+	static function pushcfunction(l:State, f:cpp.Callable<StatePointer->Int>) : Void;
 
 	@:native('lua_strlen')
 	static function strlen(l:State, idx:Int) : Int;
-
-	@:native('lua_isfunction')
-	static function isfunction(l:State, idx:Int) : Int;
 
 	@:native('lua_istable')
 	static function istable(l:State, idx:Int) : Int;
@@ -367,9 +380,6 @@ extern class Lua {
 
 	@:native('lua_isnil')
 	static function isnil(l:State, idx:Int) : Int;
-
-	@:native('lua_isboolean')
-	static function isboolean(l:State, idx:Int) : Int;
 
 	@:native('lua_isthread')
 	static function isthread(l:State, idx:Int) : Int;
@@ -405,16 +415,16 @@ extern class Lua {
 	*/
 
 	/* Event codes */
-	
+
 	public static inline var LUA_HOOKCALL:Int      = 0;
 	public static inline var LUA_HOOKRET:Int       = 1;
 	public static inline var LUA_HOOKLINE:Int      = 2;
 	public static inline var LUA_HOOKCOUNT:Int     = 3;
 	public static inline var LUA_HOOKTAILRET:Int  = 4;
 
-	
+
 	/* Event masks */
-	   
+
 	public static inline var LUA_MASKCALL:Int  = (1 << LUA_HOOKCALL);
 	public static inline var LUA_MASKRET:Int   = (1 << LUA_HOOKRET);
 	public static inline var LUA_MASKLINE:Int  = (1 << LUA_HOOKLINE);
@@ -424,7 +434,7 @@ extern class Lua {
 	/* Functions to be called by the debuger in specific events */
 
 	@:native('linc::lua::getstack') // is it works ?
-	static function getstack(l:State, level:Int, ar:Lua_Debug) : Int; 
+	static function getstack(l:State, level:Int, ar:Lua_Debug) : Int;
 
 	@:native('linc::lua::getinfo') //  is it works ?
 	static function getinfo(l:State, what:String, ar:Lua_Debug) : Int;
@@ -461,7 +471,7 @@ extern class Lua {
 
 	@:native('lua_upvaluejoin')
 	static function upvaluejoin(l:State, idx1:Int, n1:Int, idx2:Int, n2:Int) : Void;
-	
+
 
 	// @:native('lua_loadx')
 	// static function loadx(l:State, reader:lua_Reader, dt:Void, chunkname:String, mode:String) : Int;
@@ -568,7 +578,7 @@ class Lua_helper {
 		}
 
 		var ret:Dynamic = null;
-		
+
 		switch (nparams) {
 			case 0:
 				ret = cbf();
@@ -592,7 +602,7 @@ class Lua_helper {
 
 		/* return the number of results */
 		return 1;
-		
+
 	} //callback_handler
 
 }
